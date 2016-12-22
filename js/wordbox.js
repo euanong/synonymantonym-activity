@@ -6,6 +6,13 @@ function WordBox(synonym,width,height,stage){
 	this.container = null;
 	this.text = "";
 	this.width = width;
+	this.titleFont = "30px Open Sans";
+	this.titleColour = "#FFFFFF";
+	this.synonymBoxColour = "#1EB025";
+	this.antonymBoxColour = "#FF0000";
+	this.synonymText = "Synonyms";
+	this.antonymText = "Antonyms";
+
 	this.createRectangle = function(w,h,x,y) {
 		console.log("make rectangle");
 		console.log(w);
@@ -30,7 +37,7 @@ function WordBox(synonym,width,height,stage){
 	}
 
 	this.addTextToContainer = function(text){
-		var msg = new createjs.Text(text, '30px Open Sans', '#FFFFFF');
+		var msg = new createjs.Text(text, this.titleFont, this.titleColour);
 		var twidth = msg.getBounds().width;
 		msg.x = (this.width/2)-(twidth/2);
 		msg.y = 35;
@@ -46,12 +53,12 @@ function WordBox(synonym,width,height,stage){
 		if (synonym==false){
 			console.log("antonym");
 			this.x = (stage.canvas.width)-width;
-			this.colour = "#FF0000";
-			this.text = "Antonyms";
+			this.colour = this.antonymBoxColour;
+			this.text = this.antonymText;
 		} else {
 			this.x = 0;
-			this.colour = "#1EB025";
-			this.text = "Synonyms";
+			this.colour = this.synonymBoxColour;
+			this.text = this.synonymText;
 		}
 		this.createRectangle(width,height,this.x,this.y);
 		this.createContainer(this.x,this.y);

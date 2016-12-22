@@ -10,7 +10,7 @@ def RepresentsInt(s):
 	except ValueError:
 		return False
 
-page = requests.get('http://www.english-for-students.com/Adjective-Able.html')
+page = requests.get('http://www.english-for-students.com/Abandon.html')
 #print page.text
 soup = BeautifulSoup(page.text, 'html.parser')
 first = False
@@ -21,9 +21,13 @@ for elem in soup(text=re.compile(r"^1\.	.+", re.MULTILINE)):
 	else:
 		print "Antonyms"
 	for child in elem.parent.descendants:
-		if RepresentsInt(child.encode('utf-8')[0]):
-			print child.split('	', 1)[-1].lower()
-			print "---"
+		#print child
+		#print "--"
+		a = child.encode('utf-8').replace('\n', '')
+		if len(a)>0:
+			if RepresentsInt(a[0]):
+				print child.split('	', 1)[-1].lower().replace('\n', '')
+				print "---"
 print "Next"
 first = False
 for elem in soup(text=re.compile(r"nyms: $")):
@@ -40,5 +44,5 @@ for elem in soup(text=re.compile(r"nyms: $")):
 		a = child.encode('utf-8').replace('\n', '')
 		if len(a)>0:
 			if a[0].isalpha():
-				print a.lower()
+				print a.lower().replace('\n', '')
 				print "---"

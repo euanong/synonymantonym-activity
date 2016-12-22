@@ -1,4 +1,4 @@
-define(["sugar-web/activity/activity",'easeljs','tweenjs','activity/wordbox'], function (activity) {
+define(["sugar-web/activity/activity",'easeljs','tweenjs','activity/wordbox','activity/word'], function (activity) {
 
 	// Manipulate the DOM only when it is ready.
 	require(['domReady!'], function (doc) {
@@ -51,6 +51,8 @@ function runactivity(){
 		synonymbox.init();
 		var antonymbox = new WordBox(false,wordboxwidth,wordboxheight,stage);
 		antonymbox.init();
+		var testword = new Word(true,"relinquish",500,500,stage);
+		testword.init();
 		stage.update();
 	}
     init();
