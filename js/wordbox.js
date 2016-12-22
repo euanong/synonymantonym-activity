@@ -17,7 +17,7 @@ function WordBox(synonym,width,height,stage){
 
 	this.addItem = function(word) {
 		//add item at this.lowestitem, then add item depth + item margin to it
-		console.log(word);
+		console.log(this.lowestItem);
 		var twidth = word.boxWidth;
 		word.x = this.x+(this.width/2)-(twidth/2);
 		word.y = this.lowestItem;
@@ -25,8 +25,10 @@ function WordBox(synonym,width,height,stage){
 		word.container.y = word.y;
 		console.log(word.x);
 		console.log(word.y);
-		this.lowestItem+=word.boxHeight+this.itemMargin;
 		stage.update();
+		this.lowestItem+=word.boxHeight;
+		this.lowestItem+=this.itemMargin;
+		console.log(word);
 	}
 
 	this.createRectangle = function(w,h,x,y) {

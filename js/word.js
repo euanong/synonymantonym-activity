@@ -33,8 +33,8 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox){
 		} else {
 			console.log("Right");
 		}
-		//console.log(this.synonymbox);
-		//console.log(this.antonymbox);
+		console.log(this.synonymbox);
+		console.log(this.antonymbox);
 		if (synonym) {
 			this.synonymbox.addItem(this);
 		} else {
@@ -65,8 +65,7 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox){
 					console.log("Item inside synonym");
 					d.draggable = false;
 					d.processCollision(true);
-				}
-				if (antbox.rectangle.contains(c.x,c.y)){
+				} else if (antbox.rectangle.contains(c.x,c.y)){
 					console.log("Item inside antonym");
 					d.draggable = false;
 					d.processCollision(false);
