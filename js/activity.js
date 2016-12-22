@@ -53,6 +53,10 @@ function runactivity(){
 		antonymbox.init();
 		var testword = new Word(true,"relinquish",500,500,stage);
 		testword.init();
+		var testword2 = new Word(true,"resign",500,500,stage);
+		testword.init();
+		var testword3= new Word(true,"forgo",500,500,stage);
+		testword.init();
 		stage.update();
 	}
     init();
