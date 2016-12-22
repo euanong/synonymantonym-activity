@@ -44,7 +44,7 @@ function runactivity(){
 	            canvas.height = window.innerHeight-55;
 	            stage.update();
 	    }
-	    makeText("Abandon");
+	    makeText("abandon");
 		var wordboxwidth = stage.canvas.width/4;
 		var wordboxheight = stage.canvas.height;
 		var synonymbox = new WordBox(true,wordboxwidth,wordboxheight,stage);
@@ -53,10 +53,10 @@ function runactivity(){
 		antonymbox.init();
 		var testword = new Word(true,"relinquish",500,500,stage);
 		testword.init();
-		var testword2 = new Word(true,"resign",500,500,stage);
-		testword.init();
-		var testword3= new Word(true,"forgo",500,500,stage);
-		testword.init();
+		var testword2 = new Word(true,"resign",600,500,stage);
+		testword2.init();
+		var testword3= new Word(true,"forgo",700,500,stage);
+		testword3.init();
 		stage.update();
 	}
     init();
