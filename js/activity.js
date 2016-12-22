@@ -1,31 +1,49 @@
-define(["sugar-web/activity/activity",'easeljs','tweenjs','activity/wordbox','activity/word'], function (activity) {
+define(["sugar-web/activity/activity",'easeljs','tweenjs','activity/wordbox','activity/word','activity/worddata'], function (act) {
 
 	// Manipulate the DOM only when it is ready.
 	require(['domReady!'], function (doc) {
 
 		// Initialize the activity.
-		runactivity();
+		runactivity(act);
 
 	});
 
 });
 
-function runactivity(){
+function runactivity(act){
 	var canvas;
 	var stage;
 	var synonymbox;
-	var antonymbox;
-	function init(){
-		function makeText(word){
-			var msg = new createjs.Text(word, '70px Crimson Text', '#999');
-			var twidth = msg.getBounds().width;
-			msg.x = centerX - (twidth/2);
-			msg.y = 55;
-			stage.addChild(msg);
-			stage.update();
-			msg.alpha = 1;
-		}
+	var antonymbox;	
+	var wordused;
+	var synonyms;
+	var synels = [];
+	var antonyms;
+	var antels = [];
+	var worddata;
+	function getWordStore(){
+		var obj_keys = Object.keys(worddata);
+        var random = obj_keys[Math.floor(Math.random() *obj_keys.length)];
+        console.log(random);
+        wordused = random;
+        synonyms = worddata[random]["synonyms"];
+        antonyms = worddata[random]["antonyms"];
+	}
 
+	function makeText(word){
+		var msg = new createjs.Text(word, '70px Crimson Text', '#999');
+		var twidth = msg.getBounds().width;
+		msg.x = centerX - (twidth/2);
+		msg.y = 55;
+		stage.addChild(msg);
+		stage.update();
+		msg.alpha = 1;
+	}
+
+	function init(){
+		console.log(act);
+		worddata = JSON.parse(data);
+		getWordStore();
 		canvas = document.getElementById('actualcanvas');
     	canvas.width = window.innerWidth; 
     	canvas.height = window.innerHeight-55;
@@ -44,19 +62,27 @@ function runactivity(){
 	            canvas.height = window.innerHeight-55;
 	            stage.update();
 	    }
-	    makeText("abandon");
+	    makeText(wordused);
+
 		var wordboxwidth = stage.canvas.width/4;
 		var wordboxheight = stage.canvas.height;
 		var synonymbox = new WordBox(true,wordboxwidth,wordboxheight,stage);
 		synonymbox.init();
 		var antonymbox = new WordBox(false,wordboxwidth,wordboxheight,stage);
 		antonymbox.init();
-		var testword = new Word(true,"relinquish",500,500,stage);
-		testword.init();
-		var testword2 = new Word(true,"resign",600,500,stage);
-		testword2.init();
-		var testword3= new Word(true,"forgo",700,500,stage);
-		testword3.init();
+		var boundsleft = synonymbox.x+wordboxwidth;
+		var boundsright = antonymbox.x;
+		var testword;
+		for (var i = 0; i<synonyms.length; i++){
+			testword = new Word(true,synonyms[i],boundsleft,boundsright,stage,synonymbox,antonymbox);
+			testword.init();
+			synels.push(testword);
+		}
+		for (var i = 0; i<antonyms.length; i++){
+			testword = new Word(false,antonyms[i],boundsleft,boundsright,stage,synonymbox,antonymbox);
+			testword.init();
+			antels.push(testword);
+		}
 		stage.update();
 	}
     init();

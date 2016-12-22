@@ -12,6 +12,22 @@ function WordBox(synonym,width,height,stage){
 	this.antonymBoxColour = "#FF0000";
 	this.synonymText = "Synonyms";
 	this.antonymText = "Antonyms";
+	this.lowestItem = 100;
+	this.itemMargin = 10;
+
+	this.addItem = function(word) {
+		//add item at this.lowestitem, then add item depth + item margin to it
+		console.log(word);
+		var twidth = word.boxWidth;
+		word.x = this.x+(this.width/2)-(twidth/2);
+		word.y = this.lowestItem;
+		word.container.x = word.x;
+		word.container.y = word.y;
+		console.log(word.x);
+		console.log(word.y);
+		this.lowestItem+=word.boxHeight+this.itemMargin;
+		stage.update();
+	}
 
 	this.createRectangle = function(w,h,x,y) {
 		console.log("make rectangle");
