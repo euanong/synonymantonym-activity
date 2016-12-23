@@ -18,6 +18,7 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 	this.falling = true;
 	this.endy = null;
 	this.speed = null;
+	this.passedBottom = false;
 
 	this.createContainer = function(){
 		this.container = new createjs.Container();
@@ -32,19 +33,54 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 
 	this.processCollision = function(issynonym){
 		if (synonym!=issynonym){
-			console.log("Wrong");
+			//console.log("Wrong");
+			game.lives -= 1;
+			if (game.lives<=0){
+				//console.log("dead");
+				setTimeout(function(){g.restart();},1000);
+			}
 		} else {
-			console.log("Right");
+			//console.log("Right");
 		}
-		console.log(this.synonymbox);
-		console.log(this.antonymbox);
+		//console.log(this.synonymbox);
+		//console.log(this.antonymbox);
 		if (synonym) {
 			this.synonymbox.addItem(this);
 		} else {
 			this.antonymbox.addItem(this);
 		}
 	}
-
+	this.setTickerListener = function(){
+		var c = this.container;
+		var ca = stage.canvas.height;
+		var g = game;
+		var th = this;
+		var f = function() {
+			if (th.passedBottom == false){
+				//console.log(c);
+				//console.log(ca);
+				if (c.y>ca){
+					//console.log("passedBottom");
+					//console.log(c.y);
+					//console.log(ca);
+					th.passedBottom = true;
+					g.numbersorted += 1;
+					g.lives -= 1;
+					if (g.lives<=0){
+						console.log("dead");
+						createjs.Ticker.removeEventListener("tick",f);
+						setTimeout(function(){g.restart();},1000);
+					}
+					if (g.numbersorted==g.numberofitems){
+						console.log("restart");
+						createjs.Ticker.removeEventListener("tick",f);
+						setTimeout(function(){g.restart();},1000);
+					}
+				}
+			}
+		}
+		createjs.Ticker.addEventListener("tick", f);
+	}
 	this.setDragDropListeners = function(){
 		var c = this.container;
 		var d = this;
@@ -79,8 +115,9 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 				//console.log(c.y+(this.boxHeight/2));
 
 				if (synbox.rectangle.contains(c.x,c.y)){
-					console.log("Item inside synonym");
+					//console.log("Item inside synonym");
 					d.draggable = false;
+					d.passedBottom = true;
 					d.processCollision(true);
 					g.numbersorted += 1;
 					if (g.numbersorted==g.numberofitems){
@@ -88,8 +125,9 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 						setTimeout(function(){g.restart();},1000);
 					}
 				} else if (antbox.rectangle.contains(c.x,c.y)){
-					console.log("Item inside antonym");
+					//console.log("Item inside antonym");
 					d.draggable = false;
+					d.passedBottom = true;
 					d.processCollision(false);
 					g.numbersorted += 1;
 					if (g.numbersorted==g.numberofitems){
@@ -98,12 +136,12 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 					}
 				} else {
 					d.falling = true;
-					var distance = Math.abs(d.endy-d.y);
+					var distance = Math.abs(d.endy-c.y);
 					var time = distance/d.speed*1000;
 					//var time = 1000;
-					console.log(d.speed);
-					console.log(distance);
-					console.log(time);
+					//console.log(d.speed);
+					//console.log(distance);
+					//console.log(time);
 					createjs.Tween.get(c).to({y: d.endy}, time);
 				}
 			}
@@ -123,11 +161,11 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 	}
 
 	this.getPosition = function(t,b,l,r){
-		console.log("---GETPOSITION---");
-		console.log(t);
-		console.log(b);
-		console.log(l);
-		console.log(r);
+		//console.log("---GETPOSITION---");
+		//console.log(t);
+		//console.log(b);
+		//console.log(l);
+		//console.log(r);
 		var x,y;
 		y = Math.random()*(b-t+1)+t;
 		x = Math.random()*(r-l+1)+l;
@@ -139,13 +177,13 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 		var msg = new createjs.Text(text, this.font, this.textColour);
 		msg.x = this.textMargin;
 		msg.y = this.textMargin;
-		console.log(msg);
+		//console.log(msg);
 		var rectwidth = (this.charwidth*text.length)+(2*this.textMargin);
-		console.log(rectwidth);
+		//console.log(rectwidth);
 		//radius is the textmargin
 		var rect = new createjs.Shape();
 		rect.graphics.beginFill(this.boxColour).drawRoundRect(0,0,rectwidth,this.boxHeight,this.textMargin);
-		console.log(rect);
+		//console.log(rect);
 		this.rectangle = rect;
 		//set container x,y
 		//var pos = this.getPosition(150,stage.canvas.height-this.boxHeight,boundsleft,boundsright-rectwidth);
@@ -166,14 +204,16 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 		var distance = Math.abs(this.endy-this.y);
 		var time = distance/this.speed*1000;
 		//var time = 1000;
-		console.log(this.speed);
-		console.log(distance);
-		console.log(time);
-		createjs.Tween.get(this.container).to({y: this.endy}, time);
+		//console.log(this.speed);
+		//console.log(distance);
+		//console.log(time);
 		this.falling = true;
+		this.passedBottom = false;
+		this.setTickerListener();
 		//setTimeout(function() {
         //    this.falling = false;
         //}, time);
+        createjs.Tween.get(this.container).to({y: this.endy}, time);
 		stage.update();
 	}
 }

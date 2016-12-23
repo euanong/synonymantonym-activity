@@ -24,10 +24,6 @@ function runactivity(act){
     	stage = new createjs.Stage(canvas);
     	stage.mouseEventsEnabled = true;
     	createjs.Ticker.setFPS(30);
-		createjs.Ticker.addEventListener("tick", handleTick);
-		function handleTick() {
-		    stage.update();
-		}
 		window.addEventListener('resize', resizeCanvas, false);
 	    function resizeCanvas() {
 	            canvas.width = window.innerWidth;

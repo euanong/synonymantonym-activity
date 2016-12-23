@@ -17,26 +17,26 @@ function WordBox(synonym,width,height,stage){
 
 	this.addItem = function(word) {
 		//add item at this.lowestitem, then add item depth + item margin to it
-		console.log(this.lowestItem);
+		//console.log(this.lowestItem);
 		var twidth = word.boxWidth;
 		word.x = this.x+(this.width/2)-(twidth/2);
 		word.y = this.lowestItem;
 		word.container.x = word.x;
 		word.container.y = word.y;
-		console.log(word.x);
-		console.log(word.y);
+		//console.log(word.x);
+		//console.log(word.y);
 		stage.update();
 		this.lowestItem+=word.boxHeight;
 		this.lowestItem+=this.itemMargin;
-		console.log(word);
+		//console.log(word);
 	}
 
 	this.createRectangle = function(w,h,x,y) {
-		console.log("make rectangle");
-		console.log(w);
-		console.log(h);
-		console.log(x);
-		console.log(y);
+		//console.log("make rectangle");
+		//console.log(w);
+		//console.log(h);
+		//console.log(x);
+		//console.log(y);
 		//make rectangle
 		this.rectangle = new createjs.Rectangle(x,y,w,h);
 		//draw rectangle
@@ -59,17 +59,17 @@ function WordBox(synonym,width,height,stage){
 		var twidth = msg.getBounds().width;
 		msg.x = (this.width/2)-(twidth/2);
 		msg.y = 35;
-		console.log(msg);
+		//console.log(msg);
 		this.container.addChild(msg);
 		stage.update();
 		msg.alpha = 1;
 	}
 
 	this.init = function(){
-		console.log("synonym");
-		console.log(synonym);
+		//console.log("synonym");
+		//console.log(synonym);
 		if (synonym==false){
-			console.log("antonym");
+			//console.log("antonym");
 			this.x = (stage.canvas.width)-width;
 			this.colour = this.antonymBoxColour;
 			this.text = this.antonymText;
