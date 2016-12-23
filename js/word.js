@@ -38,7 +38,7 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game,speed
 			game.updatelivestext(game.lives);
 			if (game.lives<=0){
 				//console.log("dead");
-				setTimeout(function(){g.restart(true);},1000);
+				setTimeout(function(){game.restart(true);},1000);
 			}
 		} else {
 			game.score += game.level;
@@ -95,6 +95,7 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game,speed
 		var c = this.container;
 		var d = this;
 		var g = game;
+		var s = stage;
 		this.rectangle.on("mousedown", function (evt) {
 			if (d.draggable==true){
 				if (d.falling == true){
@@ -123,8 +124,9 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game,speed
 				//}
 				//console.log(c.x+(this.boxWidth/2));
 				//console.log(c.y+(this.boxHeight/2));
-
-				if (synbox.rectangle.contains(c.x,c.y)){
+				var synboxouter = s.canvas.width/4;
+				var antboxouter = 3*s.canvas.width/4;
+				if (c.x<synboxouter){
 					//console.log("Item inside synonym");
 					d.draggable = false;
 					d.passedBottom = true;
@@ -134,7 +136,7 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game,speed
 						console.log("restart");
 						setTimeout(function(){g.restart(false);},1000);
 					}
-				} else if (antbox.rectangle.contains(c.x,c.y)){
+				} else if (c.x+d.boxWidth>antboxouter){
 					//console.log("Item inside antonym");
 					d.draggable = false;
 					d.passedBottom = true;
