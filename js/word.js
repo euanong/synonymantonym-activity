@@ -1,4 +1,4 @@
-function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox){
+function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 	this.x = null;
 	this.y = null;
 	this.container = null;
