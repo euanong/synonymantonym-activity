@@ -14,6 +14,12 @@ function runactivity(act){
 	var canvas;
 	var stage;
 	var g;
+
+	function prepareJSON(_callback){
+	    g.worddata = JSON.parse(data);
+	    _callback();    
+	}
+
 	function init(){
 		console.log(act);
 		canvas = document.getElementById('actualcanvas');
@@ -24,6 +30,10 @@ function runactivity(act){
     	stage = new createjs.Stage(canvas);
     	stage.mouseEventsEnabled = true;
     	createjs.Ticker.setFPS(30);
+    	createjs.Ticker.addEventListener("tick", handleTick);
+		function handleTick() {
+		    stage.update();
+		}
 		window.addEventListener('resize', resizeCanvas, false);
 	    function resizeCanvas() {
 	            canvas.width = window.innerWidth;
@@ -31,7 +41,10 @@ function runactivity(act){
 	            stage.update();
 	    }
 	    g = new Game(stage);
-	    g.init();
+	    prepareJSON(function() {
+	        console.log('Ready');
+	        g.init();
+	    });  
 	}
     init();
 }

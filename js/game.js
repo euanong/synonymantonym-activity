@@ -1,5 +1,5 @@
 function Game(stage){
-	this.wordsLoaded = false;
+	//this.wordsLoaded = false;
 	this.synonyms = null;
 	this.antonyms = null;
 	this.synonymbox = null;
@@ -14,8 +14,16 @@ function Game(stage){
 	this.allitems = [];
 	this.numberofitems = null;
 	this.numbersorted = null;
-	this.lives = null;
+	this.lives = 5;
 	this.timeout = null;
+	this.initialSpeed = 70;
+	this.speed = this.initialSpeed;
+	this.level = 1;
+	this.levelboxcontainer = null;
+	this.livesboxcontainer = null;
+	this.livestext = null;
+	this.speedIncreaseFactor = 1.2;
+	this.score = 0;
 
 	this.getWordStore = function(){
 		var obj_keys = Object.keys(this.worddata);
@@ -66,8 +74,19 @@ function Game(stage){
 		}
 	}
 
-	this.restart = function() {
+	this.restart = function(dead) {
 		console.log("restart");
+		//if dead set speed and level to original
+		if (dead==true){
+			this.speed = this.initialSpeed;
+			this.level = 1;
+			this.lives = 5;
+			this.score = 0;
+		} else {
+			this.level++;
+			this.lives++;
+			this.speed *= this.speedIncreaseFactor;
+		}
 		var th = this;
 		stage.removeAllChildren();
 		stage.update();
@@ -86,6 +105,114 @@ function Game(stage){
 		//setTimeout(function(){th.init();},500);
 	}
 
+	this.makelevelbox = function(level) {
+		var textmargin = 10;
+		var levelheight = 40;
+
+		this.levelboxcontainer = new createjs.Container();
+		this.levelboxcontainer.x = 3.5*stage.canvas.width/12;
+		this.levelboxcontainer.y = 50;
+		stage.addChild(this.levelboxcontainer);
+		stage.update();
+
+		var leveltext = new createjs.Text("Level:","25px Open Sans", "#000");
+		var msg = new createjs.Text(level.toString(), "30px Open Sans", "#000");
+		
+		var rectwidth = 70;
+		var twidth = msg.getBounds().width;
+		msg.x = (rectwidth/2)-(twidth/2);
+		msg.y = levelheight+textmargin;
+		
+		var rect = new createjs.Shape();
+		rect.graphics.beginFill("#FFF").drawRoundRect(0,0,rectwidth,rectwidth,textmargin);
+		rect.graphics.beginStroke("#000");
+		rect.graphics.setStrokeStyle(5);
+		rect.snapToPixel = true;
+		rect.graphics.drawRoundRect(0,0,rectwidth,rectwidth,textmargin);
+		rect.x=0;
+		rect.y=levelheight;
+		this.levelboxcontainer.addChild(rect);
+		this.levelboxcontainer.addChild(msg);
+		this.levelboxcontainer.addChild(leveltext);
+		stage.update();
+	}
+
+	this.makelivesbox = function(lives) {
+		var textmargin = 10;
+		var livesheight = 40;
+		var rectwidth = 70;
+
+		this.livesboxcontainer = new createjs.Container();
+		this.livesboxcontainer.x = 8.5*stage.canvas.width/12-rectwidth;
+		this.livesboxcontainer.y = 50;
+		stage.addChild(this.livesboxcontainer);
+		stage.update();
+
+		var ltext = new createjs.Text("Lives:","25px Open Sans", "#000");
+		var msg = new createjs.Text(lives.toString(), "30px Open Sans", "#000");
+		
+		var twidth = msg.getBounds().width;
+		msg.x = (rectwidth/2)-(twidth/2);
+		msg.y = livesheight+textmargin;
+		
+		var rect = new createjs.Shape();
+		rect.graphics.beginFill("#FFF").drawRoundRect(0,0,rectwidth,rectwidth,textmargin);
+		rect.graphics.beginStroke("#000");
+		rect.graphics.setStrokeStyle(5);
+		rect.snapToPixel = true;
+		rect.graphics.drawRoundRect(0,0,rectwidth,rectwidth,textmargin);
+		rect.x=0;
+		rect.y=livesheight;
+		this.livesboxcontainer.addChild(rect);
+		this.livesboxcontainer.addChild(msg);
+		this.livesboxcontainer.addChild(ltext);
+		this.livestext = msg;
+		stage.update();
+	}
+
+	this.updatelivestext = function(lives) {
+		this.livestext.text = lives.toString();
+		stage.update();
+	}
+
+	this.makescorebox = function(score) {
+		var textmargin = 10;
+		var scoreheight = 40;
+		var rectwidth = 70;
+
+		this.scoreboxcontainer = new createjs.Container();
+		this.scoreboxcontainer.x = 8.5*stage.canvas.width/12-rectwidth-50-rectwidth;
+		this.scoreboxcontainer.y = 50;
+		stage.addChild(this.scoreboxcontainer);
+		stage.update();
+
+		var ltext = new createjs.Text("Score:","25px Open Sans", "#000");
+		var msg = new createjs.Text(score.toString(), "30px Open Sans", "#000");
+		
+		var twidth = msg.getBounds().width;
+		msg.x = (rectwidth/2)-(twidth/2);
+		msg.y = scoreheight+textmargin;
+		
+		var rect = new createjs.Shape();
+		rect.graphics.beginFill("#FFF").drawRoundRect(0,0,rectwidth,rectwidth,textmargin);
+		rect.graphics.beginStroke("#000");
+		rect.graphics.setStrokeStyle(5);
+		rect.snapToPixel = true;
+		rect.graphics.drawRoundRect(0,0,rectwidth,rectwidth,textmargin);
+		rect.x=0;
+		rect.y=scoreheight;
+		this.scoreboxcontainer.addChild(rect);
+		this.scoreboxcontainer.addChild(msg);
+		this.scoreboxcontainer.addChild(ltext);
+		this.scoretext = msg;
+		stage.update();
+	}
+
+	this.updatescoretext = function(score) {
+		this.scoretext.text = score.toString();
+		stage.update();
+	}
+
 	this.init = function() {
 		this.synonyms = null;
 		this.antonyms = null;
@@ -100,14 +227,17 @@ function Game(stage){
 		this.allitems = [];
 		this.numberofitems = null;
 		this.numbersorted = null;
-
-		this.lives = 5;
-		if (this.wordsLoaded==false){
-			this.worddata = JSON.parse(data);
-			this.wordsLoaded = true;
-		}
+		this.levelboxcontainer = null;
+		//if (this.wordsLoaded==false){
+		//	this.worddata = JSON.parse(data);
+		//	this.wordsLoaded = true;
+		//}
 		this.getWordStore();
 		this.makeText(this.wordused);
+		this.makelevelbox(this.level);
+		this.makelivesbox(this.lives);
+		this.makescorebox(this.score);
+
 		var wordboxwidth = stage.canvas.width/4;
 		var wordboxheight = stage.canvas.height;
 		this.synonymbox = new WordBox(true,wordboxwidth,wordboxheight,stage);
@@ -122,11 +252,11 @@ function Game(stage){
 		this.allitems = [];
 		var g = this;
 		for (var i = 0; i<this.synonyms.length; i++){
-			testword = new Word(true,this.synonyms[i],boundsleft,boundsright,stage,this.synonymbox,this.antonymbox,g);
+			testword = new Word(true,this.synonyms[i],boundsleft,boundsright,stage,this.synonymbox,this.antonymbox,g,this.speed);
 			this.allitems.push(testword);
 		}
 		for (var j = 0; j<this.antonyms.length; j++){
-			testword = new Word(false,this.antonyms[j],boundsleft,boundsright,stage,this.synonymbox,this.antonymbox,g);
+			testword = new Word(false,this.antonyms[j],boundsleft,boundsright,stage,this.synonymbox,this.antonymbox,g,this.speed);
 			this.allitems.push(testword);
 		}
 		this.numberofitems = this.allitems.length;
