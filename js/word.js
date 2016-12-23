@@ -15,6 +15,7 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 	this.draggable = true;
 	this.synonymbox = synbox;
 	this.antonymbox = antbox;
+	this.falling = true;
 
 	this.createContainer = function(){
 		this.container = new createjs.Container();
@@ -47,11 +48,19 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 		var d = this;
 		this.rectangle.on("mousedown", function (evt) {
 			if (d.draggable==true){
+				if (d.falling == true){
+					d.falling = false;
+					createjs.Tween.removeTweens(c);
+				}
 				this.offset = {x: c.x - evt.stageX, y: c.y - evt.stageY};
 			}
 		});
 		this.rectangle.on("pressmove", function (evt) {
 			if (d.draggable==true){
+				if (d.falling == true){
+					d.falling = false;
+					createjs.Tween.removeTweens(c);
+				}
 				c.x = evt.stageX + this.offset.x;
 				c.y = evt.stageY + this.offset.y;
 			}
@@ -59,6 +68,10 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 
 		this.rectangle.on("pressup", function (evt) {
 			if (d.draggable==true){
+				if (d.falling == true){
+					d.falling = false;
+					createjs.Tween.removeTweens(c);
+				}
 				//console.log(c.x+(this.boxWidth/2));
 				//console.log(c.y+(this.boxHeight/2));
 				if (synbox.rectangle.contains(c.x,c.y)){
@@ -112,14 +125,30 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 		console.log(rect);
 		this.rectangle = rect;
 		//set container x,y
-		var pos = this.getPosition(150,stage.canvas.height-this.boxHeight,boundsleft,boundsright-rectwidth);
+		//var pos = this.getPosition(150,stage.canvas.height-this.boxHeight,boundsleft,boundsright-rectwidth);
+		var top = 3*stage.canvas.height/4;
+		var pos = this.getPosition(top,stage.canvas.height-this.boxHeight,boundsleft,boundsright-rectwidth);
 		this.boxWidth = rectwidth;
-		this.setContainerPosition(pos[0],pos[1]);
 		this.x = pos[0];
-		this.y = pos[1];
+		//this.y = pos[1];
+		this.y = -1*this.boxHeight;
+		this.setContainerPosition(this.x,this.y);
 		this.container.addChild(rect);
 		this.container.addChild(msg);
 		this.setDragDropListeners();
+		//pixels per second
+		var speed = 100;
+		var distance = Math.abs(pos[1]-this.y);
+		var time = distance/speed*1000;
+		//var time = 1000;
+		console.log(speed);
+		console.log(distance);
+		console.log(time);
+		createjs.Tween.get(this.container).to({y: pos[1]}, time);
+		this.falling = true;
+		setTimeout(function() {
+            this.falling = false;
+        }, time);
 		stage.update();
 	}
 }
