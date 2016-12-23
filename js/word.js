@@ -1,4 +1,4 @@
-function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
+function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game,speed){
 	this.x = null;
 	this.y = null;
 	this.container = null;
@@ -16,6 +16,9 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 	this.synonymbox = synbox;
 	this.antonymbox = antbox;
 	this.falling = true;
+	this.endy = null;
+	this.speed = null;
+	this.passedBottom = false;
 
 	this.createContainer = function(){
 		this.container = new createjs.Container();
@@ -30,19 +33,64 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 
 	this.processCollision = function(issynonym){
 		if (synonym!=issynonym){
-			console.log("Wrong");
+			//console.log("Wrong");
+			game.lives -= 1;
+			game.updatelivestext(game.lives);
+			if (game.lives<=0){
+				//console.log("dead");
+				setTimeout(function(){g.restart(true);},1000);
+			}
 		} else {
-			console.log("Right");
+			game.score += game.level;
+			game.updatescoretext(game.score);
+			//console.log("Right");
 		}
-		console.log(this.synonymbox);
-		console.log(this.antonymbox);
+		//console.log(this.synonymbox);
+		//console.log(this.antonymbox);
 		if (synonym) {
 			this.synonymbox.addItem(this);
 		} else {
 			this.antonymbox.addItem(this);
 		}
 	}
-
+	this.setTickerListener = function(){
+		var c = this.container;
+		var ca = stage.canvas.height;
+		var g = game;
+		var th = this;
+		var f = function() {
+			if (th.passedBottom == false){
+				//console.log(c);
+				//console.log(ca);
+				if (c.y>ca){
+					//console.log("passedBottom");
+					//console.log(c.y);
+					//console.log(ca);
+					th.passedBottom = true;
+					g.numbersorted += 1;
+					g.lives -= 1;
+					g.updatelivestext(g.lives);
+					createjs.Tween.removeTweens(c);
+					if (synonym) {
+						th.synonymbox.addItem(th);
+					} else {
+						th.antonymbox.addItem(th);
+					}
+					if (g.lives<=0){
+						console.log("dead");
+						createjs.Ticker.removeEventListener("tick",f);
+						setTimeout(function(){g.restart(true);},1000);
+					}
+					if (g.numbersorted==g.numberofitems){
+						console.log("restart");
+						createjs.Ticker.removeEventListener("tick",f);
+						setTimeout(function(){g.restart(false);},1000);
+					}
+				}
+			}
+		}
+		createjs.Ticker.addEventListener("tick", f);
+	}
 	this.setDragDropListeners = function(){
 		var c = this.container;
 		var d = this;
@@ -69,30 +117,42 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 
 		this.rectangle.on("pressup", function (evt) {
 			if (d.draggable==true){
-				if (d.falling == true){
-					d.falling = false;
-					createjs.Tween.removeTweens(c);
-				}
+				//if (d.falling == true){
+				//	d.falling = false;
+				//	createjs.Tween.removeTweens(c);
+				//}
 				//console.log(c.x+(this.boxWidth/2));
 				//console.log(c.y+(this.boxHeight/2));
+
 				if (synbox.rectangle.contains(c.x,c.y)){
-					console.log("Item inside synonym");
+					//console.log("Item inside synonym");
 					d.draggable = false;
+					d.passedBottom = true;
 					d.processCollision(true);
 					g.numbersorted += 1;
 					if (g.numbersorted==g.numberofitems){
 						console.log("restart");
-						setTimeout(function(){g.restart();},1000);
+						setTimeout(function(){g.restart(false);},1000);
 					}
 				} else if (antbox.rectangle.contains(c.x,c.y)){
-					console.log("Item inside antonym");
+					//console.log("Item inside antonym");
 					d.draggable = false;
+					d.passedBottom = true;
 					d.processCollision(false);
 					g.numbersorted += 1;
 					if (g.numbersorted==g.numberofitems){
 						console.log("restart")
-						setTimeout(function(){g.restart();},1000);
+						setTimeout(function(){g.restart(false);},1000);
 					}
+				} else {
+					d.falling = true;
+					var distance = Math.abs(d.endy-c.y);
+					var time = distance/d.speed*1000;
+					//var time = 1000;
+					//console.log(d.speed);
+					//console.log(distance);
+					//console.log(time);
+					createjs.Tween.get(c).to({y: d.endy}, time);
 				}
 			}
 		});
@@ -111,11 +171,11 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 	}
 
 	this.getPosition = function(t,b,l,r){
-		console.log("---GETPOSITION---");
-		console.log(t);
-		console.log(b);
-		console.log(l);
-		console.log(r);
+		//console.log("---GETPOSITION---");
+		//console.log(t);
+		//console.log(b);
+		//console.log(l);
+		//console.log(r);
 		var x,y;
 		y = Math.random()*(b-t+1)+t;
 		x = Math.random()*(r-l+1)+l;
@@ -127,39 +187,33 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 		var msg = new createjs.Text(text, this.font, this.textColour);
 		msg.x = this.textMargin;
 		msg.y = this.textMargin;
-		console.log(msg);
+
 		var rectwidth = (this.charwidth*text.length)+(2*this.textMargin);
-		console.log(rectwidth);
-		//radius is the textmargin
 		var rect = new createjs.Shape();
 		rect.graphics.beginFill(this.boxColour).drawRoundRect(0,0,rectwidth,this.boxHeight,this.textMargin);
-		console.log(rect);
 		this.rectangle = rect;
-		//set container x,y
-		//var pos = this.getPosition(150,stage.canvas.height-this.boxHeight,boundsleft,boundsright-rectwidth);
+
 		var top = 3*stage.canvas.height/4;
 		var pos = this.getPosition(top,stage.canvas.height-this.boxHeight,boundsleft,boundsright-rectwidth);
 		this.boxWidth = rectwidth;
 		this.x = pos[0];
-		//this.y = pos[1];
+		this.endy = stage.canvas.height+10;
 		this.y = -1*this.boxHeight;
 		this.setContainerPosition(this.x,this.y);
 		this.container.addChild(rect);
 		this.container.addChild(msg);
 		this.setDragDropListeners();
+
 		//pixels per second
-		var speed = 100;
-		var distance = Math.abs(pos[1]-this.y);
-		var time = distance/speed*1000;
-		//var time = 1000;
-		console.log(speed);
-		console.log(distance);
-		console.log(time);
-		createjs.Tween.get(this.container).to({y: pos[1]}, time);
+		this.speed = speed;
+		var distance = Math.abs(this.endy-this.y);
+		var time = distance/this.speed*1000;
+
 		this.falling = true;
-		setTimeout(function() {
-            this.falling = false;
-        }, time);
+		this.passedBottom = false;
+		this.setTickerListener();
+
+        createjs.Tween.get(this.container).to({y: this.endy}, time);
 		stage.update();
 	}
 }
