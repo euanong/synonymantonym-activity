@@ -11,14 +11,17 @@ function Game(stage){
 	this.antels = null;
 	this.worddata = null;
 	this.titletext = null;
+	this.allitems = [];
+	this.numberofitems = null;
+	this.numbersorted = null;
 
 	this.getWordStore = function(){
 		var obj_keys = Object.keys(this.worddata);
-        var random = obj_keys[Math.floor(Math.random() *obj_keys.length)];
-        console.log(random);
-        this.wordused = random;
-        this.synonyms = this.worddata[random]["synonyms"];
-        this.antonyms = this.worddata[random]["antonyms"];
+				var random = obj_keys[Math.floor(Math.random() *obj_keys.length)];
+				console.log(random);
+				this.wordused = random;
+				this.synonyms = this.worddata[random]["synonyms"];
+				this.antonyms = this.worddata[random]["antonyms"];
 	}
 
 	this.makeText = function(word){
@@ -30,6 +33,43 @@ function Game(stage){
 		stage.update();
 		msg.alpha = 1;
 		this.titletext = msg;
+	}
+
+	this.shuffleAllItems = function(){
+		var array = this.allitems;
+		var currentIndex = array.length, temporaryValue, randomIndex;
+		// While there remain elements to shuffle...
+		while (0 !== currentIndex) {
+			// Pick a remaining element...
+			randomIndex = Math.floor(Math.random() * currentIndex);
+			currentIndex -= 1;
+			// And swap it with the current element.
+			temporaryValue = array[currentIndex];
+		 	array[currentIndex] = array[randomIndex];
+			array[randomIndex] = temporaryValue;
+		}
+		this.allitems = array;
+	}
+
+	this.dropItems = function(lowerbounds,upperbounds){
+		var th = this;
+		console.log("drop");
+		var wordnow;
+		wordnow = th.allitems.pop();
+		wordnow.init();
+		if (th.allitems.length >= 1){
+			var randomtime = Math.floor(Math.random()*upperbounds)+lowerbounds;
+			console.log(randomtime);  
+			setTimeout(function(){th.dropItems(lowerbounds,upperbounds)}, randomtime);
+		}
+	}
+
+	this.restart = function() {
+		console.log("restart");
+		var th = this;
+		stage.removeAllChildren();
+		stage.update();
+		th.init();
 	}
 
 	this.init = function() {
@@ -50,16 +90,25 @@ function Game(stage){
 		var testword;
 		this.synels = [];
 		this.antels = [];
+		this.allitems = [];
+		var g = this;
 		for (var i = 0; i<this.synonyms.length; i++){
-			testword = new Word(true,this.synonyms[i],boundsleft,boundsright,stage,this.synonymbox,this.antonymbox,this);
-			testword.init();
-			this.synels.push(testword);
+			testword = new Word(true,this.synonyms[i],boundsleft,boundsright,stage,this.synonymbox,this.antonymbox,g);
+			this.allitems.push(testword);
 		}
 		for (var i = 0; i<this.antonyms.length; i++){
-			testword = new Word(false,this.antonyms[i],boundsleft,boundsright,stage,this.synonymbox,this.antonymbox,this);
-			testword.init();
-			this.antels.push(testword);
+			testword = new Word(false,this.antonyms[i],boundsleft,boundsright,stage,this.synonymbox,this.antonymbox,g);
+			this.allitems.push(testword);
 		}
+		this.numberofitems = this.allitems.length;
+		this.numbersorted = 0;
+		this.shuffleAllItems();
+		//bounds for timer in ms
+		var lowerbounds = 500;
+		var upperbounds = 2000;
+		var randomtime = Math.floor(Math.random()*upperbounds)+lowerbounds;
+		var th = this;  
+		setTimeout(function(){th.dropItems(lowerbounds,upperbounds)}, randomtime);
 		stage.update();
 	}
 }

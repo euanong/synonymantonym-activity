@@ -46,6 +46,7 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 	this.setDragDropListeners = function(){
 		var c = this.container;
 		var d = this;
+		var g = game;
 		this.rectangle.on("mousedown", function (evt) {
 			if (d.draggable==true){
 				if (d.falling == true){
@@ -78,10 +79,20 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 					console.log("Item inside synonym");
 					d.draggable = false;
 					d.processCollision(true);
+					g.numbersorted += 1;
+					if (g.numbersorted==g.numberofitems){
+						console.log("restart");
+						setTimeout(function(){g.restart();},1000);
+					}
 				} else if (antbox.rectangle.contains(c.x,c.y)){
 					console.log("Item inside antonym");
 					d.draggable = false;
 					d.processCollision(false);
+					g.numbersorted += 1;
+					if (g.numbersorted==g.numberofitems){
+						console.log("restart")
+						setTimeout(function(){g.restart();},1000);
+					}
 				}
 			}
 		});
