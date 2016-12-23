@@ -16,6 +16,8 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 	this.synonymbox = synbox;
 	this.antonymbox = antbox;
 	this.falling = true;
+	this.endy = null;
+	this.speed = null;
 
 	this.createContainer = function(){
 		this.container = new createjs.Container();
@@ -69,12 +71,13 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 
 		this.rectangle.on("pressup", function (evt) {
 			if (d.draggable==true){
-				if (d.falling == true){
-					d.falling = false;
-					createjs.Tween.removeTweens(c);
-				}
+				//if (d.falling == true){
+				//	d.falling = false;
+				//	createjs.Tween.removeTweens(c);
+				//}
 				//console.log(c.x+(this.boxWidth/2));
 				//console.log(c.y+(this.boxHeight/2));
+
 				if (synbox.rectangle.contains(c.x,c.y)){
 					console.log("Item inside synonym");
 					d.draggable = false;
@@ -93,6 +96,15 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 						console.log("restart")
 						setTimeout(function(){g.restart();},1000);
 					}
+				} else {
+					d.falling = true;
+					var distance = Math.abs(d.endy-d.y);
+					var time = distance/d.speed*1000;
+					//var time = 1000;
+					console.log(d.speed);
+					console.log(distance);
+					console.log(time);
+					createjs.Tween.get(c).to({y: d.endy}, time);
 				}
 			}
 		});
@@ -142,24 +154,26 @@ function Word(synonym,text,boundsleft,boundsright,stage,synbox,antbox,game){
 		this.boxWidth = rectwidth;
 		this.x = pos[0];
 		//this.y = pos[1];
+		//this.endy = pos[1];
+		this.endy = stage.canvas.height+10;
 		this.y = -1*this.boxHeight;
 		this.setContainerPosition(this.x,this.y);
 		this.container.addChild(rect);
 		this.container.addChild(msg);
 		this.setDragDropListeners();
 		//pixels per second
-		var speed = 100;
-		var distance = Math.abs(pos[1]-this.y);
-		var time = distance/speed*1000;
+		this.speed = 100;
+		var distance = Math.abs(this.endy-this.y);
+		var time = distance/this.speed*1000;
 		//var time = 1000;
-		console.log(speed);
+		console.log(this.speed);
 		console.log(distance);
 		console.log(time);
-		createjs.Tween.get(this.container).to({y: pos[1]}, time);
+		createjs.Tween.get(this.container).to({y: this.endy}, time);
 		this.falling = true;
-		setTimeout(function() {
-            this.falling = false;
-        }, time);
+		//setTimeout(function() {
+        //    this.falling = false;
+        //}, time);
 		stage.update();
 	}
 }
