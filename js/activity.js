@@ -4,13 +4,13 @@ define(["sugar-web/activity/activity",'easeljs','tweenjs','activity/game','activ
 	require(['domReady!'], function (doc) {
 
 		// Initialize the activity.
-		runactivity(act);
+		runactivity(act,doc);
 
 	});
 
 });
 
-function runactivity(act){
+function runactivity(act,doc){
 	var canvas;
 	var stage;
 	var g;
@@ -21,6 +21,7 @@ function runactivity(act){
 	}
 
 	function init(){
+		//console.log(doc);
 		console.log(act);
 		canvas = document.getElementById('actualcanvas');
     	canvas.width = window.innerWidth; 
@@ -40,6 +41,11 @@ function runactivity(act){
 	            canvas.height = window.innerHeight-55;
 	            stage.update();
 	    }
+	    var stopButton = doc.getElementById("stop-button");
+        stopButton.addEventListener('click', function (e) {
+        	console.log("close");
+            act.close();
+        });
 	    g = new Game(stage);
 	    prepareJSON(function() {
 	        console.log('Ready');
