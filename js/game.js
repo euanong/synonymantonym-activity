@@ -1,4 +1,4 @@
-function Game(stage){
+function Game(stage, doc){
 	//this.wordsLoaded = false;
 	this.synonyms = null;
 	this.antonyms = null;
@@ -175,42 +175,11 @@ function Game(stage){
 		stage.update();
 	}
 
-	this.makescorebox = function(score) {
-		var textmargin = 10;
-		var scoreheight = 40;
-		var rectwidth = 70;
-
-		this.scoreboxcontainer = new createjs.Container();
-		this.scoreboxcontainer.x = 8.5*stage.canvas.width/12-rectwidth-50-rectwidth;
-		this.scoreboxcontainer.y = 50;
-		stage.addChild(this.scoreboxcontainer);
-		stage.update();
-
-		var ltext = new createjs.Text("Score:","25px Open Sans", "#000");
-		var msg = new createjs.Text(score.toString(), "30px Open Sans", "#000");
-		
-		var twidth = msg.getBounds().width;
-		msg.x = (rectwidth/2)-(twidth/2);
-		msg.y = scoreheight+textmargin;
-		
-		var rect = new createjs.Shape();
-		rect.graphics.beginFill("#FFF").drawRoundRect(0,0,rectwidth,rectwidth,textmargin);
-		rect.graphics.beginStroke("#000");
-		rect.graphics.setStrokeStyle(5);
-		rect.snapToPixel = true;
-		rect.graphics.drawRoundRect(0,0,rectwidth,rectwidth,textmargin);
-		rect.x=0;
-		rect.y=scoreheight;
-		this.scoreboxcontainer.addChild(rect);
-		this.scoreboxcontainer.addChild(msg);
-		this.scoreboxcontainer.addChild(ltext);
-		this.scoretext = msg;
-		stage.update();
-	}
-
 	this.updatescoretext = function(score) {
-		this.scoretext.text = score.toString();
-		stage.update();
+		var scoreel = doc.getElementById("score");
+		//console.log(scoreel);
+		//console.log(score);
+		scoreel.innerHTML = "Score: "+score.toString();
 	}
 
 	this.init = function() {
@@ -236,7 +205,7 @@ function Game(stage){
 		this.makeText(this.wordused);
 		this.makelevelbox(this.level);
 		this.makelivesbox(this.lives);
-		this.makescorebox(this.score);
+		this.updatescoretext(this.score);
 
 		var wordboxwidth = stage.canvas.width/4;
 		var wordboxheight = stage.canvas.height;

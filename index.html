@@ -14,6 +14,21 @@
   <script data-main="js/loader" src="lib/require.js"></script>
   <script src="lib/jquery-1.10.1.js"></script>
   <style>*{-webkit-tap-highlight-color: rgba(0, 0, 0, 0);}</style>
+  <style type="text/css">
+    #score{
+      position: absolute;
+      width: 200px;
+      text-align: center;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 5px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 30px;
+      color: #FFF;
+      display: inline;
+      left: calc(50vw - 100px);
+    }
+  </style>
 </head>
 
 <body>
@@ -21,7 +36,7 @@
   <button class="toolbutton" id="activity-button" title="My Activity"></button>
 
   <!-- Add more buttons here -->
-
+  <div id="score">Score: 0</div>
   <!-- Buttons with class="pull-right" will be right aligned -->
   <button class="toolbutton pull-right" id="stop-button" title="Stop"></button>
 </div>

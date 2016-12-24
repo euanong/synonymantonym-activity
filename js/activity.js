@@ -46,7 +46,7 @@ function runactivity(act,doc){
         	console.log("close");
             act.close();
         });
-	    g = new Game(stage);
+	    g = new Game(stage, doc);
 	    prepareJSON(function() {
 	        console.log('Ready');
 	        g.init();
