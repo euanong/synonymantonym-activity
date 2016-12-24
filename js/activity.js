@@ -35,12 +35,6 @@ function runactivity(act,doc){
 		function handleTick() {
 		    stage.update();
 		}
-		window.addEventListener('resize', resizeCanvas, false);
-	    function resizeCanvas() {
-	            canvas.width = window.innerWidth;
-	            canvas.height = window.innerHeight-55;
-	            stage.update();
-	    }
 	    var stopButton = doc.getElementById("stop-button");
         stopButton.addEventListener('click', function (e) {
         	console.log("close");
@@ -51,6 +45,13 @@ function runactivity(act,doc){
 	        console.log('Ready');
 	        g.init();
 	    });  
+	    window.addEventListener('resize', resizeCanvas, false);
+	    function resizeCanvas() {
+	        canvas.width = window.innerWidth;
+	        canvas.height = window.innerHeight-55;
+	        stage.update();
+	        g.resize();
+	    }
 	}
     init();
 }

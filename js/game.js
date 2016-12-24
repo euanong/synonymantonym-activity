@@ -24,6 +24,8 @@ function Game(stage, doc){
 	this.livestext = null;
 	this.speedIncreaseFactor = 1.2;
 	this.score = 0;
+	this.livesatbeginningoflevel = this.lives;
+	this.scoreatbeginningoflevel = this.score;
 
 	this.getWordStore = function(){
 		var obj_keys = Object.keys(this.worddata);
@@ -37,7 +39,7 @@ function Game(stage, doc){
 	this.makeText = function(word){
 		var msg = new createjs.Text(word, '70px Crimson Text', '#999');
 		var twidth = msg.getBounds().width;
-		msg.x = centerX - (twidth/2);
+		msg.x = stage.canvas.width/2 - (twidth/2);
 		msg.y = 55;
 		stage.addChild(msg);
 		stage.update();
@@ -87,6 +89,8 @@ function Game(stage, doc){
 			this.lives++;
 			this.speed *= this.speedIncreaseFactor;
 		}
+		this.livesatbeginningoflevel = this.lives;
+		this.scoreatbeginningoflevel = this.score;
 		var th = this;
 		stage.removeAllChildren();
 		stage.update();
@@ -103,6 +107,27 @@ function Game(stage, doc){
 		}
 		th.init();
 		//setTimeout(function(){th.init();},500);
+	}
+
+	this.resize = function() {
+		console.log("resize");
+		var th = this;
+		th.lives = th.livesatbeginningoflevel;
+		th.score = th.scoreatbeginningoflevel;
+		stage.removeAllChildren();
+		stage.update();
+		createjs.Ticker.removeAllEventListeners();
+		createjs.Ticker.addEventListener("tick", handleTick);
+		createjs.Ticker.addEventListener("tick", createjs.Tween);
+		var st = stage;
+		function handleTick() {
+		    st.update();
+		}
+		if (th.timeout!=null){
+			clearTimeout(th.timeout);
+			clearTimeout(th.timeout);
+		}
+		th.init(true);
 	}
 
 	this.makelevelbox = function(level) {
@@ -182,15 +207,16 @@ function Game(stage, doc){
 		scoreel.innerHTML = "Score: "+score.toString();
 	}
 
-	this.init = function() {
-		this.synonyms = null;
-		this.antonyms = null;
+	this.init = function(resize=false) {
 		this.synonymbox = null;
 		this.antonymbox = null;	
-		this.wordused = null;
-		this.synonyms = null;
+		if (resize==false){
+			this.synonyms = null;
+			this.antonyms = null;
+			this.wordused = null;
+			this.getWordStore();
+		}
 		this.synels = null;
-		this.antonyms = null;
 		this.antels = null;
 		this.titletext = null;
 		this.allitems = [];
@@ -201,7 +227,6 @@ function Game(stage, doc){
 		//	this.worddata = JSON.parse(data);
 		//	this.wordsLoaded = true;
 		//}
-		this.getWordStore();
 		this.makeText(this.wordused);
 		this.makelevelbox(this.level);
 		this.makelivesbox(this.lives);
