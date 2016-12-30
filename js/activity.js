@@ -4,6 +4,7 @@ define(["sugar-web/activity/activity",'easeljs','tweenjs','activity/game','activ
 	require(['domReady!'], function (doc) {
 
 		// Initialize the activity.
+		act.setup();
 		runactivity(act,doc);
 
 	});
@@ -35,11 +36,6 @@ function runactivity(act,doc){
 		function handleTick() {
 		    stage.update();
 		}
-	    var stopButton = doc.getElementById("stop-button");
-        stopButton.addEventListener('click', function (e) {
-        	console.log("close");
-            act.close();
-        });
 	    g = new Game(stage, doc);
 	    prepareJSON(function() {
 	        console.log('Ready');
